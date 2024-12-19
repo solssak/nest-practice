@@ -12,7 +12,10 @@ export class BoardsController {
   }
 
   @Post()
-  createBoard(@Body body) {
-    console.log('body', body);
+  createBoard(
+    @Body('title') title: string,
+    @Body('description') description: string,
+  ): Board {
+    return this.boardsService.createBoard(title, description);
   }
 }
