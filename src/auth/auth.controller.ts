@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -10,6 +11,7 @@ import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from './dto/get-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +34,7 @@ export class AuthController {
   @Post('/test')
   // AuthGuard 를 사용해 인증된 사용자만 접근 가능하도록 설정
   @UseGuards(AuthGuard())
-  test(@Req() req) {
-    console.log('req', req);
+  test(@GetUser() user: User) {
+    console.log('user', user);
   }
 }
