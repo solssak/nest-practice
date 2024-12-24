@@ -9,12 +9,14 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async signUp(authCredentialsDto: AuthCredentialDto): Promise<User> {
@@ -40,11 +42,18 @@ export class AuthService {
     return user;
   }
 
-  async signIn(authCredentialsDto: AuthCredentialDto): Promise<string> {
+  async signIn(
+    authCredentialsDto: AuthCredentialDto,
+  ): Promise<{ accessToken: string }> {
     const { username, password } = authCredentialsDto;
     const user = await this.userRepository.findOneBy({ username: username });
     if (user && (await bcrypt.compare(password, user.password))) {
-      return 'login successful';
+      // user token generation (Secret + Payload)
+      // 토큰을 가로챌 수 있기 때문에 중요한 정보는 넣지 않음
+      const payload = { username };
+      const accessToken = await this.jwtService.sign(payload);
+
+      return { accessToken };
     } else {
       throw new UnauthorizedException('login failed');
     }
