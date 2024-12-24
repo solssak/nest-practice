@@ -53,7 +53,7 @@ export class BoardsController {
   }
 
   @Get()
-  async getAllBoards(): Promise<Board[]> {
-    return await this.boardsService.getAllBoards();
+  async getAllBoards(@GetUser() user: User): Promise<Board[]> {
+    return await this.boardsService.getAllBoards(user);
   }
 }
